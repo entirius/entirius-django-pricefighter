@@ -1,0 +1,10 @@
+app_label: django_pricefighter
+groups:
+  - name: pricefighter
+    title: "PriceFighter"
+    models:
+      - Channel
+      - ProductRepresentation
+      - PricingRule
+      - QuoteConfig
+      - PriceDecision
