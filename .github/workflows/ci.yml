@@ -12,6 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
+      # entirius-django-atlas is a private repo resolved from git (see [tool.uv.sources]).
+      # Rewriting the credential here keeps the token out of uv.lock and out of the repo.
+      # Drop this step together with the [tool.uv.sources] block at atlas's PyPI release.
+      - run: git config --global url."https://x-access-token:${{ secrets.ATLAS_READ_TOKEN }}@github.com/".insteadOf "https://github.com/"
       - run: uv sync --frozen --all-extras
       - run: uv run ruff check .
       - run: uv run ruff format --check .
@@ -33,6 +37,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
+      # entirius-django-atlas is a private repo resolved from git (see [tool.uv.sources]).
+      # Rewriting the credential here keeps the token out of uv.lock and out of the repo.
+      # Drop this step together with the [tool.uv.sources] block at atlas's PyPI release.
+      - run: git config --global url."https://x-access-token:${{ secrets.ATLAS_READ_TOKEN }}@github.com/".insteadOf "https://github.com/"
       - run: uv sync --frozen --all-extras
       - run: uv run pytest -x -q
 

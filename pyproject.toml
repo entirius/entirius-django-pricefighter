@@ -21,7 +21,8 @@ dependencies = [
     "celery>=5.3",
     "entirius-django-utils>=2.0.0",
     "entirius-django-regional>=2.0.1",
-    "entirius-django-pricemanager>=4.0.1",
+    "entirius-django-pricemanager>=4.2.0",
+    "entirius-django-atlas>=2.0.0",
 ]
 
 [project.optional-dependencies]
@@ -37,6 +38,16 @@ test = [
 
 [project.urls]
 Repository = "https://github.com/entirius/entirius-django-pricefighter"
+
+# TEMPORARY: both siblings are needed at versions PyPI does not carry yet, so uv resolves
+# them from git for development and CI; the published wheel keeps the plain version
+# requirements. Delete each entry (and re-lock) once that package is released:
+#   entirius-django-atlas        - private repo, never published; CI needs ATLAS_READ_TOKEN.
+#   entirius-django-pricemanager - public, but `price_bounds_service` / `price_write_guard`
+#                                  land in 4.2.0 and PyPI stops at 4.1.0. No token needed.
+[tool.uv.sources]
+entirius-django-atlas = { git = "https://github.com/entirius/entirius-django-atlas", branch = "develop" }
+entirius-django-pricemanager = { git = "https://github.com/entirius/entirius-django-pricemanager", branch = "develop" }
 
 [build-system]
 requires = ["hatchling"]
@@ -75,7 +86,4 @@ pep621_dev_dependency_groups = ["dev", "test"]
 [tool.deptry.per_rule_ignores]
 # Soft integration guarded by try/except ImportError (channel/representation sync reads
 # django_pim models; no-ops when absent) -> extra "pim".
-# django_atlas is a hard runtime dependency of the decision engine (engine_inputs,
-# market_service); the dependency on entirius-django-atlas will be declared once that
-# package is published (bootstrap ordering between the two modules).
-DEP001 = ["django_pim", "django_atlas"]
+DEP001 = ["django_pim"]
