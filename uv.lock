@@ -479,7 +479,7 @@ wheels = [
 [[package]]
 name = "entirius-django-atlas"
 version = "2.0.0"
-source = { git = "https://github.com/entirius/entirius-django-atlas?branch=develop#9a36b3166d2be6b4dd38fbae29212c0748626b27" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "celery" },
     { name = "django", version = "5.2.17", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
@@ -493,6 +493,10 @@ dependencies = [
     { name = "lxml" },
     { name = "pydantic" },
     { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/88/fd/03ca36730a68a5308f021aa2c0bc8b647b10669b9212dac85fa90df67d82/entirius_django_atlas-2.0.0.tar.gz", hash = "sha256:dc82d84fd01266539e02e734a3d6df9e4cea09b8e7868e1b048f666f884dabbe", size = 412197, upload-time = "2026-08-26T13:29:28.447Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/13/49/45fc528eb4e6a6e18b42fde21f4633fca32bf4aa2b7c683572474f692224/entirius_django_atlas-2.0.0-py3-none-any.whl", hash = "sha256:707ae608f33a5f881387cbdd275e149e27103b8bc6d02db01db42aa2ccdf2f70", size = 242872, upload-time = "2026-08-26T13:29:27.227Z" },
 ]
 
 [[package]]
@@ -573,10 +577,10 @@ requires-dist = [
     { name = "djangorestframework", specifier = ">=3.14" },
     { name = "djangorestframework-simplejwt", specifier = ">=5.3" },
     { name = "drf-spectacular", specifier = ">=0.27" },
-    { name = "entirius-django-atlas", git = "https://github.com/entirius/entirius-django-atlas?branch=develop" },
+    { name = "entirius-django-atlas", specifier = ">=2.0.0" },
     { name = "entirius-django-pim", marker = "extra == 'pim'", specifier = ">=3.0.0" },
     { name = "entirius-django-pim", marker = "extra == 'test'", specifier = ">=3.0.0" },
-    { name = "entirius-django-pricemanager", git = "https://github.com/entirius/entirius-django-pricemanager?branch=develop" },
+    { name = "entirius-django-pricemanager", specifier = ">=4.2.0" },
     { name = "entirius-django-regional", specifier = ">=2.0.1" },
     { name = "entirius-django-utils", specifier = ">=2.0.0" },
     { name = "pre-commit", marker = "extra == 'dev'" },
@@ -591,7 +595,7 @@ provides-extras = ["pim", "dev", "test"]
 [[package]]
 name = "entirius-django-pricemanager"
 version = "4.2.0"
-source = { git = "https://github.com/entirius/entirius-django-pricemanager?branch=develop#d59a6b4e95d0a959f91444e832ec5ebe8e1bfd69" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "celery" },
     { name = "celery-once" },
@@ -609,6 +613,10 @@ dependencies = [
     { name = "entirius-py-process-logger" },
     { name = "pydantic" },
     { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9c/15/774e0a04f28330166d129e8083e71d16997834ebe33a4219079ad4b03609/entirius_django_pricemanager-4.2.0.tar.gz", hash = "sha256:921fd5f75d2d5c62a9a63ca58606aa186e1646e0146b2bc2099e3debb7d6f56c", size = 180049, upload-time = "2026-08-26T08:42:18.302Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fa/83/649fb3a0e8e987d052475e68550e678f458850a255b767b1872134e1bd0c/entirius_django_pricemanager-4.2.0-py3-none-any.whl", hash = "sha256:4e344b441893ab4b9f5ea3e853ec2683c55f227a9b4a54e3ed6c7fcb0db48fe9", size = 130876, upload-time = "2026-08-26T08:42:17.161Z" },
 ]
 
 [[package]]

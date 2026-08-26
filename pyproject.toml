@@ -39,16 +39,6 @@ test = [
 [project.urls]
 Repository = "https://github.com/entirius/entirius-django-pricefighter"
 
-# TEMPORARY: both siblings are needed at versions PyPI does not carry yet, so uv resolves
-# them from git for development and CI; the published wheel keeps the plain version
-# requirements. Delete each entry (and re-lock) once that package is released:
-#   entirius-django-atlas        - private repo, never published; CI needs ATLAS_READ_TOKEN.
-#   entirius-django-pricemanager - public, but `price_bounds_service` / `price_write_guard`
-#                                  land in 4.2.0 and PyPI stops at 4.1.0. No token needed.
-[tool.uv.sources]
-entirius-django-atlas = { git = "https://github.com/entirius/entirius-django-atlas", branch = "develop" }
-entirius-django-pricemanager = { git = "https://github.com/entirius/entirius-django-pricemanager", branch = "develop" }
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
