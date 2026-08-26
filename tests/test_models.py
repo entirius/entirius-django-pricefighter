@@ -216,7 +216,7 @@ def test_quote_config_different_currency_does_not_conflict():
 
 
 # ---------------------------------------------------------------------------
-# Seed fixture sanity (entirius-test-package/fixtures/django_pricefighter.cfg.yaml)
+# Seed fixture sanity (entirius-test-package-emporium/fixtures/django_pricefighter.cfg.yaml)
 # ---------------------------------------------------------------------------
 
 _SEED_FIXTURE = os.environ.get("PRICEFIGHTER_SEED_FIXTURE", "")
