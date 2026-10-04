@@ -10,3 +10,11 @@ class DjangoPriceFighterConfig(AppConfig):
     name = "django_pricefighter"
     verbose_name = "PriceFighter"
     is_volkanos = True
+    # Copied 1:1 from entirius-django-access cf538d2 catalogue defaults;
+    # the access defaults stay until this module's release.
+    access_areas = [
+        {"key": "pricefighter.decisions", "label": "Repricing decisions and apply", "sensitive": ("money",)},
+        {"key": "pricefighter.rules", "label": "Repricing rules"},
+    ]
+    # Every admin view carries its access_area; no route needs a path rule.
+    access_route_rules = []

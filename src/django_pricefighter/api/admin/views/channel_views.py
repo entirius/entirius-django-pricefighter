@@ -23,6 +23,7 @@ class ChannelViewSet(viewsets.ViewSet):
 
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
+    access_area = "pricefighter.decisions"
 
     @extend_schema(
         summary="List pricefighter channels",
