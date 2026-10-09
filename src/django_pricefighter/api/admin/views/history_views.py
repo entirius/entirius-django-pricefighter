@@ -38,6 +38,7 @@ def _to_response(pd) -> PriceDecisionResponse:
 class HistoryViewSet(viewsets.ViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
+    access_area = "pricefighter.decisions"
 
     @extend_schema(
         operation_id="pricefighter_history_list",

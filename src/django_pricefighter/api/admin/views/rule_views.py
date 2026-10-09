@@ -61,6 +61,7 @@ def _get_rule_or_404(pk: str | None):
 class PricingRuleViewSet(viewsets.ViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
+    access_area = "pricefighter.rules"
 
     @extend_schema(
         summary="List pricing rules",

@@ -107,6 +107,7 @@ def _row_to_detail(row: DecisionRow) -> DecisionDetailResponse:
 class DecisionViewSet(viewsets.ViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
+    access_area = "pricefighter.decisions"
 
     @extend_schema(
         operation_id="pricefighter_decision_list",
