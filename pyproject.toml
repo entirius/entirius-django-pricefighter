@@ -1,7 +1,21 @@
 [project]
 name = "entirius-django-pricefighter"
 version = "1.0.0"
-description = "Competitive pricing engine Django module for Volkanos"
+description = "Competitive pricing module for Entirius: strategies, price decisions from market observations, apply and audit"
+keywords = ["django", "pricing", "repricing", "price-monitoring", "ecommerce", "entirius"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: Django",
+    "Framework :: Django :: 5.2",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP",
+]
 authors = [{ name = "Entirius" }]
 maintainers = [
     { name = "Piotr Brzozowski", email = "piotrb@entirius.com" },
@@ -37,7 +51,11 @@ test = [
 ]
 
 [project.urls]
+Homepage = "https://docs.entirius.com/"
+Documentation = "https://github.com/entirius/entirius-django-pricefighter/tree/develop/docs"
 Repository = "https://github.com/entirius/entirius-django-pricefighter"
+Changelog = "https://github.com/entirius/entirius-django-pricefighter/blob/develop/CHANGELOG.md"
+Issues = "https://github.com/entirius/entirius-django-pricefighter/issues"
 
 [build-system]
 requires = ["hatchling"]
