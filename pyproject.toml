@@ -1,6 +1,6 @@
 [project]
 name = "entirius-django-pricefighter"
-version = "1.0.0"
+version = "1.1.0"
 description = "Competitive pricing module for Entirius: strategies, price decisions from market observations, apply and audit"
 keywords = ["django", "pricing", "repricing", "price-monitoring", "ecommerce", "entirius"]
 classifiers = [
