@@ -1,9 +1,6 @@
 # AGENTS.md
 
-Competitive pricing engine for Volkanos — distribution `entirius-django-pricefighter`,
-Django app `django_pricefighter`.
-
-## Quick Reference
+`entirius-django-pricefighter` (Django app `django_pricefighter`) — competitive pricing engine of Entirius.
 
 Mirrors PIM products per channel (Pattern 2 scoping channel + synced
 `ProductRepresentation`), resolves a pricing strategy per sku×market (`PricingRule`,
@@ -14,15 +11,6 @@ decision (`apply_service`) through pricemanager's `edit_price()`, logging a `Pri
 snapshot. The full engine/apply flow is wrapped in an admin v2 API — decision view
 (list/detail), bounds, decision history, apply (single==batch), and PricingRule CRUD, on
 top of the channels endpoints.
-
-**Tech:** Python >=3.11, Django >=5.0, DRF, Pydantic, drf-spectacular, Celery,
-entirius-django-utils (BaseModel), entirius-django-regional (Language),
-entirius-django-pricemanager (bounds, `edit_price()`). `django_pim` is a soft dependency
-(try/except ImportError, extra `pim`) — sync no-ops without it. `django_atlas`
-(entirius-django-atlas) is a **hard** runtime dependency of the engine services
-(`engine_inputs`, `market_service`), declared in `dependencies`. Atlas is private and not on
-PyPI, so `[tool.uv.sources]` resolves it from git and CI authenticates with the
-`ATLAS_READ_TOKEN` secret — delete both at atlas's first PyPI release.
 
 ## Commands
 
@@ -41,9 +29,11 @@ PyPI, so `[tool.uv.sources]` resolves it from git and CI authenticates with the
 - Git flow: `master` (production) + `develop` (integration); changes land via PR; semver tag on `master`.
 - Never rename the package / Django app_label / DB table prefix `django_pricefighter` — it is a schema contract.
 - Migrations are part of the public contract — never edit an already released migration.
+- Access: areas live on the AppConfig (`access_areas`, `access_route_rules`), every admin view carries
+  `access_area`; a new admin route without one fails `tests/test_access_ownership.py`.
 - Default: do not commit — git is the user's call.
 
-## Commit Message Format
+### Commit Message Format
 
 **NEVER add `Co-Authored-By: Claude ...` (or any other Claude/Anthropic attribution) to commit messages.**
 
@@ -90,7 +80,7 @@ src/django_pricefighter/
 │   ├── responses/                      # channel, decision_view, decision_history, bounds, apply, pricing_rule
 │   └── requests/                       # apply, pricing_rule
 │
-├── tasks.py                     # Celery: pricefighter.flush_pending_sync, pricefighter.full_sync
+├── tasks.py                     # Celery: pricefighter.flush_pending_sync, .full_sync, .prune_decisions
 ├── management/commands/
 │   ├── sync_pricefighter_channels.py   # channel_sync_service wrapper (seed/entrypoint)
 │   └── pricefighter_full_sync.py       # representation_sync_service.full_sync() wrapper
@@ -101,66 +91,30 @@ src/django_pricefighter/
 
 Layer rule: `API → Services → Models → DB`. No ORM in views.
 
----
+Dependencies: `django_utils` (BaseModel), `django_regional` (Language), `django_pricemanager` (bounds,
+`edit_price()`) and `django_atlas` (observations — a hard runtime dependency of `engine_inputs` and
+`market_service`). `django_pim` is a soft dependency (try/except ImportError, extra `pim`) — sync no-ops without it.
 
-## Data Model
+| Topic | Where |
+|---|---|
+| Model-by-model field reference and constraints | `docs/data-model.md` |
+| PIM -> PriceFighter sync: signal-driven feed (default off), daily cron full-sync, channel sync | `docs/sync.md` |
+| `rule_resolver` precedence (sku > category > channel) and the strategy permission table | `docs/strategy-resolution.md` |
+| Read path: the decision pipeline, observation flags, invariants | `docs/decision-engine.md` |
+| Write path: recompute, stale-preview rejection, result buckets, `PriceDecision` retention | `docs/apply-flow.md` |
+| Admin v2 endpoint table with filters, sorts and payloads | `docs/api.md` |
+| Per-test-file scope map, run command, fixtures | `docs/testing.md` |
+| Full gotcha list | `docs/gotchas.md` |
+| ERD diagram config | `docs/erd-config.yaml` |
 
-All models inherit `django_utils.models.base_model.BaseModel` (`created_at`/`modified_at`):
-`Channel`, `ProductRepresentation`, `PricingRule`, `QuoteConfig`, `PriceDecision`.
-Field-by-field reference and constraints: `docs/data-model.md`.
 
-## Sync (PIM -> PriceFighter)
+## Settings
 
-Two independent feeds into `ProductRepresentation` — signal-driven (default **off**) and a
-daily cron full-sync — both funnelling through `representation_sync_service`. Channels sync
-separately via `channel_sync_service`. See `docs/sync.md`.
-
-## Strategy Resolution
-
-`rule_resolver.resolve()` is most-specific-wins: **sku > category > channel**, ties broken by
-`pk`, falling back to `DEFAULT_RESOLVED_RULE` (`hold`). `strategy` is a *directional
-permission*, not an engine on/off switch. See `docs/strategy-resolution.md`.
-
-## Decision Engine — read path, side-effect-free
-
-`decision_view_service.build_decision_rows()` enumerates markets, bulk-fetches through
-`engine_inputs` (constant query count), runs each sku×market through the pure
-`quote_engine.compute_decision()`, then sorts/paginates in RAM. Zero writes.
-Full 10-step pipeline, observation flags and invariants: `docs/decision-engine.md`.
-
-## Apply Flow — write path
-
-`apply_service.apply_single()` **recomputes** the decision live, rejects a stale preview,
-writes through pricemanager's `edit_price()` and logs a `PriceDecision` snapshot.
-`PriceDecision` (decision-level) and pricemanager's `PriceHistory` (write-level) are two
-distinct logs. Full 8-step flow, buckets and retention: `docs/apply-flow.md`.
-
-## API Surface
-
-Prefix `/api/pricefighter/v2/admin/` (JWT + `IsAdminUser`, explicit on every ViewSet):
-channels, decisions (list/detail), bounds, history, apply, and PricingRule CRUD.
-Endpoint table with filters, sorts and payloads: `docs/api.md`.
-
-## Testing
-
-```bash
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test make test   # postgres required
-```
-
-Per-file scope map: `docs/testing.md`.
-
-Factories live in `tests/conftest.py`: `pim_channel_factory`, `pf_channel_factory`,
-`pim_product_factory`, `pim_category_factory` build the minimal PIM object graph
-(RealProduct + FeatureSet + Product) needed to exercise the sync services without a full
-PIM fixture. `decision_fixture` builds the full cross-module graph the engine/apply tests
-need (pricemanager Channel/TaxRate/CurrentPrice/PurchaseCost/BaselineConfig, an atlas
-monitoring `Source`, this module's `Channel`/`ProductRepresentation`/`QuoteConfig`) — one
-market (`ch1`/DE/USD), `SKU-A` with a valid observation, `SKU-B` without.
-
-Celery tasks: `pricefighter.flush_pending_sync`, `pricefighter.full_sync`,
-`pricefighter.prune_decisions` (PriceDecision retention).
-
----
+| Setting | Default | Purpose |
+|---|---|---|
+| `PRICEFIGHTER_REF_ESTIMATOR` | `"min"` | reference price estimator: `min` / `second_best` / `median` |
+| `PRICEFIGHTER_STALENESS_DAYS` | `3` | observations older than this are flagged `stale` |
+| `PRICEFIGHTER_DECISION_RETENTION_DAYS` | `365` | `PriceDecision` retention for `pricefighter.prune_decisions` |
 
 ## Gotchas
 
@@ -180,17 +134,3 @@ Full list: `docs/gotchas.md`. The ones that bite hardest:
   both admin classes override `save_model` to call `full_clean()`; bulk paths bypass it entirely.
 - The decision view's `margin` is net-based (`(net_value - net_cost) / net_value * 100`),
   matching pricemanager's definition — **not** `(gross - cost) / gross`.
-
-## Reference Docs
-
-| File | Content |
-|------|---------|
-| `docs/data-model.md` | Model-by-model field reference and constraints |
-| `docs/sync.md` | PIM -> PriceFighter sync (signal tor + cron full-sync) |
-| `docs/strategy-resolution.md` | `rule_resolver` precedence and the strategy permission table |
-| `docs/decision-engine.md` | The 10-step read pipeline, observation flags, invariants |
-| `docs/apply-flow.md` | Apply/write path, result buckets, retention |
-| `docs/api.md` | Admin v2 endpoint table |
-| `docs/gotchas.md` | Full gotcha list |
-| `docs/testing.md` | Per-test-file scope map |
-| `docs/erd-config.yaml` | ERD diagram config |

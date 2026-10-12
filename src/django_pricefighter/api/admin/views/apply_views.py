@@ -36,6 +36,7 @@ def _to_response_item(result: ApplyResult) -> ApplyResultItemResponse:
 class ApplyViewSet(viewsets.ViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
+    access_area = "pricefighter.decisions"
     throttle_classes = [ApplyThrottle]
 
     @extend_schema(

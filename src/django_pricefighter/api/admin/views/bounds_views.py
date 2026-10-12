@@ -21,6 +21,7 @@ from django_pricefighter.services import bounds_service
 class BoundsViewSet(viewsets.ViewSet):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
+    access_area = "pricefighter.decisions"
 
     @extend_schema(
         operation_id="pricefighter_bounds_retrieve",

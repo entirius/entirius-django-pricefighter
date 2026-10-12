@@ -1,5 +1,9 @@
 # Test suite map
 
+```bash
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test make test   # postgres required
+```
+
 | File | Scope |
 |------|-------|
 | `test_models.py` | Constraints (unique sku+channel, PricingRule exactly-one-scope), `QuoteConfig.clean()` validations, seed-fixture `full_clean()` sanity |
@@ -9,3 +13,13 @@
 | `test_decision_view_integration.py` | market_service + engine_inputs + decision_view_service against a real DB: pre-filter, sort, pagination, constant query count across batch sizes, zero writes on render |
 | `test_apply_service.py` | Single apply (write + PriceDecision snapshot), country-scoped write, stale-preview rejection, admin_edit precedence lock, apply-time floor clamp on revert, batch best-effort mix, retention prune |
 | `test_api.py` | Admin API: decisions list/detail (auth, sort allowlist, channel/recommendation filter validation, competitor_only switch, zero side-effects), bounds (auth, missing params, unknown channel/sku), history (auth, filters), apply (auth, cap 1000/1001, actionable write + PriceDecision, stale mismatch, not-actionable skip, throttling 31st request -> 429), rule CRUD (auth, exactly-one-scope, unknown channel, whitelist defense unit test) |
+
+## Fixtures
+
+Factories live in `tests/conftest.py`: `pim_channel_factory`, `pf_channel_factory`,
+`pim_product_factory`, `pim_category_factory` build the minimal PIM object graph
+(RealProduct + FeatureSet + Product) needed to exercise the sync services without a full
+PIM fixture. `decision_fixture` builds the full cross-module graph the engine/apply tests
+need (pricemanager Channel/TaxRate/CurrentPrice/PurchaseCost/BaselineConfig, an atlas
+monitoring `Source`, this module's `Channel`/`ProductRepresentation`/`QuoteConfig`) — one
+market (`ch1`/DE/USD), `SKU-A` with a valid observation, `SKU-B` without.
